@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Channel Command Center · CalFast on Amazon.ca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+:root{
+  --paper:#FFFFFF; --wash:#FAFAF7; --ink:#14160F; --sub:#6B6E63; --line:#E7E8E1;
+  --lime:#DBF4A7; --limeDeep:#557A1B; --limeMid:#8FB23A; --warn:#B45309; --alert:#B91C1C;
+  --panel:#16180F; --panelSub:#9CA08C;
+  --fd:'Bricolage Grotesque', system-ui, sans-serif;
+  --fb:'IBM Plex Sans', system-ui, sans-serif;
+  --fm:'IBM Plex Mono', ui-monospace, monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--wash);color:var(--ink);font-family:var(--fb);}
+button{font-family:inherit;}
+input,textarea,select{font-family:var(--fb);}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--limeMid);outline-offset:1px;}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;}
+.shell{display:flex;max-width:1180px;margin:0 auto;min-height:100vh;}
+.side{width:232px;flex-shrink:0;border-right:1px solid var(--line);background:var(--paper);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+.main{flex:1;overflow-y:auto;max-height:100vh;}
+.navbtn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font-size:13.5px;cursor:pointer;padding:9px 12px;border-radius:9px;margin-bottom:2px;border:none;background:transparent;color:var(--sub);}
+.navbtn.active{background:#EEF6DC;color:var(--limeDeep);font-weight:600;}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;}
+.grid{display:grid;gap:12px;}
+.g2{grid-template-columns:repeat(2,1fr);} .g3{grid-template-columns:repeat(3,1fr);}
+.g4{grid-template-columns:repeat(4,1fr);} .g5{grid-template-columns:repeat(5,1fr);}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--fm);font-size:13px;font-weight:600;color:var(--ink);background:var(--lime);border:1px solid var(--limeMid);border-radius:10px;padding:10px 16px;cursor:pointer;}
+.btn.sm{padding:7px 12px;font-size:12px;}
+.btn.ghost{color:#E7EAD9;background:transparent;border:1px solid rgba(255,255,255,0.28);}
+.btn.line{background:#fff;border:1px solid var(--line);color:var(--sub);font-weight:500;}
+.btn.danger{background:#FBE9E9;border:1px solid #F2D2D2;color:var(--alert);}
+.pill{font-family:var(--fm);font-size:11px;border-radius:999px;padding:3px 9px;white-space:nowrap;}
+.eyebrow{font-family:var(--fm);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--limeDeep);}
+.h2{font-family:var(--fd);font-weight:600;font-size:26px;line-height:1.1;margin:6px 0 0;}
+.sub{font-family:var(--fb);font-size:14px;color:var(--sub);margin:8px 0 0;max-width:640px;}
+.jdtag{font-family:var(--fm);font-size:10.5px;color:var(--limeDeep);background:#EEF6DC;border:1px solid var(--lime);border-radius:999px;padding:3px 9px;white-space:nowrap;}
+table{width:100%;border-collapse:collapse;}
+th{font-family:var(--fm);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--sub);text-align:left;padding:11px 13px;font-weight:500;}
+td{padding:11px 13px;vertical-align:middle;}
+.lbl{display:block;font-family:var(--fm);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);margin:10px 0 5px;}
+.inp{width:100%;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:#fff;}
+.modalbg{position:fixed;inset:0;background:rgba(20,22,15,.45);display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;z-index:50;overflow-y:auto;}
+.modal{background:#fff;border-radius:16px;max-width:520px;width:100%;padding:22px;}
+.spin{animation:spin 1s linear infinite;} @keyframes spin{to{transform:rotate(360deg);}}
+.rise{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;} @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.fade{animation:fade .4s ease both;} @keyframes fade{from{opacity:0;}to{opacity:1;}}
+.tabs{display:none;}
+@media(max-width:760px){
+  .side{display:none;} .tabs{display:flex;}
+  .g2,.g3,.g4,.g5{grid-template-columns:1fr 1fr;}
+}
+@media(prefers-reduced-motion:reduce){.rise,.fade,.spin{animation:none!important;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useMemo,useRef} = React;
+
+/* ---------------------------------------------------------- TOKENS */
+const C={paper:"#FFFFFF",wash:"#FAFAF7",ink:"#14160F",sub:"#6B6E63",line:"#E7E8E1",
+  lime:"#DBF4A7",limeDeep:"#557A1B",limeMid:"#8FB23A",warn:"#B45309",alert:"#B91C1C",
+  panel:"#16180F",panelSub:"#9CA08C"};
+const FM="var(--fm)",FB="var(--fb)",FD="var(--fd)";
+
+/* ---------------------------------------------------------- STORAGE (safe) */
+const store={
+  read(k,f){try{const v=window.localStorage.getItem(k);return v?JSON.parse(v):f;}catch(e){return f;}},
+  write(k,v){try{window.localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+};
+
+/* ---------------------------------------------------------- SEED DATA */
+const SEED=[
+ {id:1,sku:"TFG-SCR-1030",name:'#10 x 3" Structural Wood Screw, 500 ct',brand:"TFG Private",cat:"Fasteners",ch:"FBA",cost:31.00,price:42.99,units:38,sold30:190,leadTime:14,map:39.99,comp:41.50,owner:"You",suppressed:false},
+ {id:2,sku:"TFG-HEX-1206",name:'1/2" x 6" Hex Bolt, Grade 5, 25 ct',brand:"TFG Private",cat:"Fasteners",ch:"FBA",cost:19.50,price:28.49,units:540,sold30:230,leadTime:14,map:25.99,comp:28.00,owner:"You",suppressed:false},
+ {id:3,sku:"TFG-ANC-0350",name:'3/8" Sleeve Anchor, Zinc, 50 ct',brand:"TFG Private",cat:"Fasteners",ch:"FBA",cost:24.00,price:33.99,units:1480,sold30:185,leadTime:21,map:29.99,comp:33.00,owner:"You",suppressed:false},
+ {id:4,sku:"TFG-CUT-0450",name:'4.5" Cut-Off Wheel, Metal, 25 ct',brand:"TFG Private",cat:"Abrasives",ch:"FBA",cost:16.50,price:21.99,units:620,sold30:58,leadTime:21,map:18.99,comp:20.50,owner:"You",suppressed:false},
+ {id:5,sku:"TFG-GLV-NITL",name:"Nitrile-Coated Work Gloves, L, 12 pr",brand:"TFG Private",cat:"Safety",ch:"FBA",cost:18.00,price:26.99,units:410,sold30:0,leadTime:14,map:23.99,comp:25.50,owner:"Suppressed",suppressed:true},
+ {id:6,sku:"DW-IMP-887K",name:"DeWALT 20V MAX Impact Driver Kit",brand:"DeWALT",cat:"Power Tools",ch:"FBM",cost:188.00,price:184.99,units:64,sold30:70,leadTime:30,map:209.00,comp:184.99,owner:"3P Seller",suppressed:false},
+ {id:7,sku:"MW-HMR-2904",name:"Milwaukee M18 FUEL Hammer Drill",brand:"Milwaukee",cat:"Power Tools",ch:"FBM",cost:232.00,price:279.00,units:31,sold30:42,leadTime:30,map:269.00,comp:278.00,owner:"You",suppressed:false},
+ {id:8,sku:"MK-SND-5021",name:'Makita 5" Random Orbit Sander',brand:"Makita",cat:"Power Tools",ch:"FBM",cost:96.00,price:119.00,units:210,sold30:34,leadTime:30,map:109.00,comp:118.00,owner:"You",suppressed:false},
+ {id:9,sku:"BO-BIT-21TI",name:"Bosch 21-pc Titanium Drill Bit Set",brand:"Bosch",cat:"Power Tools",ch:"FBA",cost:38.00,price:49.99,units:320,sold30:150,leadTime:21,map:44.99,comp:49.00,owner:"You",suppressed:false},
+ {id:10,sku:"TFG-GLS-AF12",name:"Anti-Fog Safety Glasses, Clear, 12 ct",brand:"TFG Private",cat:"Safety",ch:"FBA",cost:27.50,price:34.99,units:290,sold30:0,leadTime:14,map:31.99,comp:27.50,owner:"Suppressed",suppressed:true},
+];
+const CATS=["Fasteners","Power Tools","Hand Tools","Abrasives","Safety","Adhesives","Chemicals","Electrical"];
+
+/* ---------------------------------------------------------- HELPERS */
+const money=n=>"$"+Math.round(n).toLocaleString("en-CA");
+const money2=n=>"$"+(Number(n)||0).toLocaleString("en-CA",{minimumFractionDigits:2,maximumFractionDigits:2});
+const reduceMotion=()=>window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function metrics(s){
+  const vel=(Number(s.sold30)||0)/30;
+  const cover=vel>0?(Number(s.units)||0)/vel:Infinity;
+  const marginAbs=(Number(s.price)||0)-(Number(s.cost)||0);
+  const marginPct=Number(s.price)>0?marginAbs/Number(s.price):0;
+  const belowCost=Number(s.cost)>0&&Number(s.price)<Number(s.cost);
+  const lead=Number(s.leadTime)||14;
+  const rop=vel*lead+vel*7;
+  const needsReorder=vel>0&&(Number(s.units)||0)<=rop;
+  const target=45;
+  const suggestQty=Math.max(0,Math.round(vel*(lead+target)-(Number(s.units)||0)));
+  const f30=Math.round(vel*30),f60=Math.round(vel*60),f90=Math.round(vel*90);
+  const belowMap=Number(s.map)>0&&Number(s.comp)>0&&Number(s.comp)<Number(s.map);
+  let status="healthy";
+  if(s.suppressed)status="stranded";
+  else if(belowCost)status="loss";
+  else if(vel<=0&&(Number(s.units)||0)>0)status="dead";
+  else if(needsReorder)status="reorder";
+  else if(cover>120)status="overstock";
+  return{vel,cover,marginAbs,marginPct,belowCost,belowMap,rop,needsReorder,suggestQty,f30,f60,f90,status,lead};
+}
+const SM={
+  healthy:{label:"Healthy",color:C.limeDeep,bg:"#EEF6DC"},
+  reorder:{label:"Reorder now",color:C.warn,bg:"#FBF1E3"},
+  overstock:{label:"Overstock",color:C.warn,bg:"#FBF1E3"},
+  dead:{label:"No sales",color:C.warn,bg:"#FBF1E3"},
+  loss:{label:"Below cost",color:C.alert,bg:"#FBE9E9"},
+  stranded:{label:"Stranded",color:C.alert,bg:"#FBE9E9"},
+};
+
+/* ---------------------------------------------------------- ICONS */
+const P={
+  sparkles:"M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z",
+  gauge:"M12 13l4-4 M21 13a9 9 0 10-18 0",
+  box:"M3 8l9-5 9 5v8l-9 5-9-5z M3 8l9 5 9-5 M12 13v8",
+  tag:"M4 4h7l9 9-7 7-9-9z",
+  mega:"M4 9v6h4l8 4V5L8 9z",
+  msg:"M4 5h16v10H9l-5 4z",
+  cal:"M5 6h14v14H5z M5 10h14 M9 4v4 M15 4v4",
+  alert:"M12 3l9 16H3z M12 9v5 M12 17v.5",
+  up:"M3 17l6-6 4 4 8-8 M17 7h4v4",
+  down:"M3 7l6 6 4-4 8 8 M17 17h4v-4",
+  check:"M5 12l4 4 10-10",
+  plus:"M12 5v14 M5 12h14",
+  x:"M6 6l12 12 M18 6L6 18",
+  edit:"M14 4l6 6-10 10H4v-6z",
+  trash:"M4 7h16 M9 7V5h6v2 M6 7l1 13h10l1-13",
+  search:"M11 11m-7 0a7 7 0 1014 0a7 7 0 10-14 0 M21 21l-4.3-4.3",
+  shield:"M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z",
+  ext:"M14 4h6v6 M20 4l-9 9 M5 7v12h12V12",
+  rotate:"M4 10a8 8 0 0114-4l2 2 M20 14a8 8 0 01-14 4l-2-2 M18 4v4h-4 M6 20v-4h4",
+  list:"M8 6h12 M8 12h12 M8 18h12 M4 6h.01 M4 12h.01 M4 18h.01",
+  bolt:"M13 3L4 14h6l-1 7 9-11h-6z",
+  dl:"M12 4v10 M8 11l4 4 4-4 M5 19h14",
+};
+function Ic({n,s=16,c="currentColor",sw=1.8,fill="none"}){
+  return <svg width={s} height={s} viewBox="0 0 24 24" fill={fill} stroke={c} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    {P[n].split(" M").map((d,i)=><path key={i} d={(i?"M":"")+d}/>)}
+  </svg>;
+}
+function Logo({s=22,dark=false}){
+  const cx=12,cy=12,R=10,hub=2.5;
+  const main=dark?C.lime:C.limeDeep, mid=dark?C.lime:C.limeMid;
+  const big=[],thin=[],dots=[];
+  for(let i=0;i<8;i++){const a=(i/8)*Math.PI*2;
+    big.push([cx+Math.cos(a)*hub,cy+Math.sin(a)*hub,cx+Math.cos(a)*(R-1.3),cy+Math.sin(a)*(R-1.3)]);}
+  for(let i=0;i<8;i++){const a=((i+0.5)/8)*Math.PI*2;
+    thin.push([cx+Math.cos(a)*hub,cy+Math.sin(a)*hub,cx+Math.cos(a)*(R-2),cy+Math.sin(a)*(R-2)]);}
+  for(let i=0;i<16;i++){const a=(i/16)*Math.PI*2;dots.push([cx+Math.cos(a)*R,cy+Math.sin(a)*R]);}
+  return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" aria-hidden>
+    <circle cx={cx} cy={cy} r={R} stroke={main} strokeWidth="1.4"/>
+    <circle cx={cx} cy={cy} r={R-2.4} stroke={mid} strokeWidth="0.7" opacity="0.8"/>
+    {thin.map((l,i)=><line key={"t"+i} x1={l[0]} y1={l[1]} x2={l[2]} y2={l[3]} stroke={mid} strokeWidth="0.6"/>)}
+    {big.map((l,i)=><line key={"s"+i} x1={l[0]} y1={l[1]} x2={l[2]} y2={l[3]} stroke={main} strokeWidth="1.15"/>)}
+    {dots.map((d,i)=><circle key={"d"+i} cx={d[0]} cy={d[1]} r="0.5" fill={main}/>)}
+    <circle cx={cx} cy={cy} r={hub} fill={dark?"rgba(219,244,167,0.18)":C.lime} stroke={main} strokeWidth="1"/>
+  </svg>;
+}
+function SDMark({s=30,dark=false}){
+  return <div style={{width:s,height:s,borderRadius:s*0.28,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,
+    background:dark?"rgba(219,244,167,0.14)":C.lime,border:"1px solid "+(dark?"rgba(219,244,167,0.5)":C.limeMid),
+    fontFamily:FD,fontWeight:700,fontSize:s*0.44,color:dark?C.lime:C.ink,letterSpacing:"0.01em"}}>SD</div>;
+}
+
+/* ---------------------------------------------------------- SHARED UI */
+function Head({eyebrow,title,sub,jd}){
+  return <div style={{marginBottom:22}}>
+    <div style={{display:"flex",flexWrap:"wrap",gap:12,alignItems:"flex-end",justifyContent:"space-between"}}>
+      <div>
+        <div className="eyebrow">{eyebrow}</div>
+        <h2 className="h2">{title}</h2>
+      </div>
+      {jd&&<div style={{display:"flex",flexWrap:"wrap",gap:8}}>{jd.map(j=><span className="jdtag" key={j}>{j}</span>)}</div>}
+    </div>
+    {sub&&<p className="sub">{sub}</p>}
+  </div>;
+}
+const Dot=({c})=><span style={{display:"inline-block",width:7,height:7,borderRadius:999,background:c}}/>;
+
+function useCount(t,ms=1000){
+  const[v,setV]=useState(reduceMotion()?t:0);
+  useEffect(()=>{
+    if(reduceMotion()){setV(t);return;}
+    let raf,start;const tick=x=>{if(!start)start=x;const p=Math.min((x-start)/ms,1);
+      setV(t*(1-Math.pow(1-p,3)));if(p<1)raf=requestAnimationFrame(tick);};
+    raf=requestAnimationFrame(tick);return()=>cancelAnimationFrame(raf);
+  },[t]);return v;
+}
+function Kpi({label,value,suffix="",dec=0,trend,good}){
+  const v=useCount(value);
+  const disp=dec?v.toFixed(dec):Math.round(v).toLocaleString("en-CA");
+  return <div className="card">
+    <div style={{fontFamily:FM,fontSize:11,letterSpacing:".08em",color:C.sub,textTransform:"uppercase"}}>{label}</div>
+    <div style={{fontFamily:FM,fontWeight:600,fontSize:26,marginTop:8}}>{disp}{suffix}</div>
+    {trend&&<div style={{display:"flex",alignItems:"center",gap:5,marginTop:6,fontFamily:FM,fontSize:12,color:good?C.limeDeep:C.warn}}>
+      <Ic n={good?"up":"down"} s={13} c={good?C.limeDeep:C.warn}/>{trend}</div>}
+  </div>;
+}
+
+/* simple SVG area sparkline */
+function Spark({data,h=180}){
+  const ref=useRef(null);const[w,setW]=useState(560);
+  useEffect(()=>{const f=()=>ref.current&&setW(ref.current.clientWidth);f();window.addEventListener("resize",f);return()=>window.removeEventListener("resize",f);},[]);
+  const max=Math.max(...data),min=Math.min(...data);
+  const pts=data.map((d,i)=>[i/(data.length-1)*w,h-8-((d-min)/(max-min||1))*(h-26)]);
+  const line=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area=line+` L${w} ${h} L0 ${h} Z`;
+  return <div ref={ref} style={{width:"100%"}}>
+    <svg width={w} height={h}>
+      <defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor={C.limeMid} stopOpacity="0.35"/><stop offset="100%" stopColor={C.limeMid} stopOpacity="0.02"/></linearGradient></defs>
+      <path d={area} fill="url(#ga)"/><path d={line} fill="none" stroke={C.limeMid} strokeWidth="2.4"/>
+    </svg>
+  </div>;
+}
+
+/* ---------------------------------------------------------- ALERTS (live) */
+function buildAlerts(items){
+  const a=[];
+  items.forEach(s=>{const m=metrics(s);
+    if(m.belowCost)a.push({sev:"alert",icon:"alert",sku:s.sku,title:s.name+" is listed below cost",
+      body:`List ${money2(s.price)} against cost ${money2(s.cost)}. Losing ${money2(-m.marginAbs)} per unit. Raise price or pull the listing.`,to:"pricing"});
+    if(s.suppressed)a.push({sev:"alert",icon:"shield",sku:s.sku,title:s.name+" is stranded",
+      body:`Not buyable until reinstated. ${s.units} units idle, about ${money(s.units*s.cost*0.45)} in tied capital.`,to:"catalogue"});
+    if(m.needsReorder&&!s.suppressed)a.push({sev:"warn",icon:"box",sku:s.sku,title:s.name+" needs a purchase order",
+      body:`Sells ${m.vel.toFixed(1)}/day, stocks out in ${Math.round(m.cover)} days. Order ${m.suggestQty} units now to cover the ${m.lead}-day lead time.`,to:"catalogue"});
+    if(m.belowMap)a.push({sev:"warn",icon:"tag",sku:s.sku,title:s.name+" has a MAP breach",
+      body:`A seller is ${money2(s.map-s.comp)} under your ${money2(s.map)} floor. Enforce through Brand Registry.`,to:"pricing"});
+  });
+  const order={alert:0,warn:1};
+  return a.sort((x,y)=>order[x.sev]-order[y.sev]);
+}
+function AlertRow({a,go}){
+  const c=a.sev==="alert"?C.alert:C.warn;
+  return <button onClick={()=>go(a.to)} className="card" style={{textAlign:"left",cursor:"pointer",display:"block",width:"100%"}}>
+    <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+      <span style={{background:a.sev==="alert"?"#FBE9E9":"#FBF1E3",borderRadius:9,padding:8,flexShrink:0}}><Ic n={a.icon} s={16} c={c}/></span>
+      <div>
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          <span style={{fontFamily:FB,fontWeight:600,fontSize:14}}>{a.title}</span>
+          <span style={{fontFamily:FM,fontSize:10.5,color:C.sub}}>{a.sku}</span>
+        </div>
+        <div style={{fontFamily:FB,fontSize:12.5,color:C.sub,marginTop:4,lineHeight:1.45}}>{a.body}</div>
+      </div>
+    </div>
+  </button>;
+}
+
+/* ---------------------------------------------------------- PITCH */
+function Pitch({go}){
+  const proof=[["204%","throughput scaled at my own D2C e-commerce brand, Ctouch"],
+   ["$25M+","pan-India liquidation P&L I ran across Flipkart fulfillment"],
+   ["82\u219295%","receiving accuracy lifted in 90 days through process control"],
+   ["13 yrs","supply chain and operations, inbound to fulfillment to recovery"]];
+  return <div>
+    <div className="rise" style={{background:C.panel,borderRadius:20,padding:"44px 36px",position:"relative",overflow:"hidden"}}>
+      <div style={{position:"absolute",inset:0,background:"radial-gradient(900px 300px at 88% -10%, rgba(219,244,167,0.16), transparent)"}}/>
+      <div style={{position:"relative"}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:22}}>
+          <Logo s={20} dark/><span style={{fontFamily:FM,fontSize:12,letterSpacing:".1em",color:C.panelSub,textTransform:"uppercase"}}>Channel Intelligence · built for CalFast</span>
+        </div>
+        <h1 style={{fontFamily:FD,fontWeight:700,fontSize:40,lineHeight:1.04,color:"#fff",margin:0,maxWidth:760}}>
+          I did not send a resume.<br/><span style={{color:C.lime}}>I built your Amazon channel.</span></h1>
+        <p style={{fontFamily:FB,fontSize:16,color:"#D7DAC9",margin:"18px 0 0",maxWidth:600,lineHeight:1.55}}>
+          A working operations portal for CalFast on Amazon.ca. Manage the catalogue, set prices with a live below-cost guard, and let the forecast tell you what to reorder before you stock out. Add and edit SKUs yourself, every number updates.</p>
+        <div style={{display:"flex",flexWrap:"wrap",gap:12,marginTop:26}}>
+          <button className="btn" onClick={()=>go("command")}>Open the command center <Ic n="up" s={15} c={C.ink}/></button>
+          <button className="btn ghost" onClick={()=>go("catalogue")}><Ic n="box" s={15} c="#E7EAD9"/> Manage the catalogue</button>
+        </div>
+      </div>
+    </div>
+    <div style={{display:"flex",gap:10,alignItems:"flex-start",background:C.wash,border:"1px solid "+C.line,borderRadius:12,padding:"12px 16px",marginTop:14}}>
+      <Ic n="alert" s={16} c={C.warn}/><p style={{fontFamily:FB,fontSize:12.5,color:C.sub,margin:0,lineHeight:1.5}}>
+        Demonstration build. Figures are illustrative and use plausible CalFast / TFG and authorized-brand SKUs, not live Seller Central data. Built to connect to your real account through Amazon SP-API.</p>
+    </div>
+    <div style={{marginTop:30}}>
+      <div className="eyebrow">Why this candidate</div>
+      <h3 style={{fontFamily:FD,fontWeight:600,fontSize:22,margin:"6px 0 18px"}}>An operator who has sold online and recovered stranded value at scale</h3>
+      <div className="grid g4">{proof.map(p=><div className="card" key={p[0]}>
+        <div style={{fontFamily:FM,fontWeight:600,fontSize:28,color:C.limeDeep}}>{p[0]}</div>
+        <div style={{fontFamily:FB,fontSize:13,color:C.sub,marginTop:6,lineHeight:1.45}}>{p[1]}</div></div>)}</div>
+    </div>
+  </div>;
+}
+
+/* ---------------------------------------------------------- COMMAND */
+function Command({items,go}){
+  const ms=items.map(metrics);
+  const net30=items.reduce((a,s)=>a+(Number(s.sold30)||0)*(Number(s.price)||0),0);
+  const cogs30=items.reduce((a,s)=>a+(Number(s.sold30)||0)*(Number(s.cost)||0),0);
+  const marginPct=net30>0?(net30-cogs30)/net30*100:0;
+  const invCost=items.reduce((a,s)=>a+(Number(s.units)||0)*(Number(s.cost)||0),0);
+  const atRisk=items.reduce((a,s,i)=>["overstock","dead","stranded"].includes(ms[i].status)?a+(Number(s.units)||0)*(Number(s.cost)||0)*0.4:a,0);
+  const belowCost=ms.filter(m=>m.status==="loss").length;
+  const reorder=ms.filter(m=>m.status==="reorder").length;
+  const stranded=ms.filter(m=>m.status==="stranded").length;
+  const alerts=buildAlerts(items);
+  const buckets=[["Healthy","healthy",C.limeDeep],["Reorder now","reorder",C.warn],["Overstock","overstock",C.warn],["No sales","dead",C.warn],["Below cost","loss",C.alert],["Stranded","stranded",C.alert]];
+  const trend=[9.8,10.4,9.6,11.2,12.1,11.8,13.0,12.6,14.1,13.8,15.2,16.3];
+  return <div>
+    <Head eyebrow="Live overview" title="Channel Command Center"
+      sub="Every figure here is computed from your catalogue. Edit a SKU and watch it move." jd={["JD 7 · KPI reporting","JD 1 · Account health"]}/>
+    <div className="grid g5">
+      <Kpi label="Net sales · 30d" value={net30} trend="from live catalogue" good/>
+      <Kpi label="Gross margin" value={marginPct} suffix="%" dec={1} trend={marginPct<25?"thin":"on target"} good={marginPct>=25}/>
+      <Kpi label="Inventory @ cost" value={invCost} trend={money(atRisk)+" at risk"} good={false}/>
+      <Kpi label="Below cost" value={belowCost} trend={belowCost?"fix pricing":"none"} good={belowCost===0}/>
+      <Kpi label="Reorder / stranded" value={reorder+stranded} trend={reorder+" reorder"} good={false}/>
+    </div>
+    <div className="grid" style={{gridTemplateColumns:"2fr 1fr",marginTop:16}}>
+      <div className="card">
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+          <div><div style={{fontFamily:FB,fontWeight:600,fontSize:15}}>Sales trend · 12 weeks</div>
+          <div style={{fontFamily:FM,fontSize:11,color:C.sub}}>weekly net sales, $000s, illustrative</div></div></div>
+        <Spark data={trend}/>
+      </div>
+      <div className="card">
+        <div style={{fontFamily:FB,fontWeight:600,fontSize:15,marginBottom:12}}>Catalogue health</div>
+        {buckets.map(b=>{const n=ms.filter(m=>m.status===b[1]).length;
+          return <div key={b[1]} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 0",borderBottom:"1px solid "+C.line}}>
+            <span style={{display:"flex",alignItems:"center",gap:8,fontFamily:FB,fontSize:13}}><Dot c={b[2]}/>{b[0]}</span>
+            <span style={{fontFamily:FM,fontSize:13}}>{n}</span></div>;})}
+      </div>
+    </div>
+    <div style={{marginTop:22}}>
+      <div className="eyebrow">Action queue</div>
+      <h3 style={{fontFamily:FD,fontWeight:600,fontSize:20,margin:"6px 0 14px"}}>{alerts.length} triggers firing right now</h3>
+      {alerts.length===0
+        ? <div className="card" style={{display:"flex",alignItems:"center",gap:10}}><Ic n="check" s={18} c={C.limeDeep}/><span style={{fontFamily:FB,fontSize:14}}>No active triggers. Catalogue is healthy.</span></div>
+        : <div className="grid g2">{alerts.slice(0,6).map((a,i)=><AlertRow key={i} a={a} go={go}/>)}</div>}
+    </div>
+  </div>;
+}
+
+/* ---------------------------------------------------------- CATALOGUE (CRUD + forecast) */
+const BLANK={sku:"",name:"",brand:"TFG Private",cat:"Fasteners",ch:"FBA",cost:0,price:0,units:0,sold30:0,leadTime:14,map:0,comp:0,owner:"You",suppressed:false};
+
+function Modal({draft,setDraft,onSave,onClose}){
+  const num=(k,v)=>setDraft({...draft,[k]:v===""?"":Number(v)});
+  const belowCost=Number(draft.cost)>0&&Number(draft.price)>0&&Number(draft.price)<Number(draft.cost);
+  const field=(k,label,opts={})=>(
+    <div>
+      <label className="lbl">{label}</label>
+      {opts.select
+        ? <select className="inp" value={draft[k]} onChange={e=>setDraft({...draft,[k]:e.target.value})}>{opts.select.map(o=><option key={o}>{o}</option>)}</select>
+        : <input className="inp" type={opts.num?"number":"text"} value={draft[k]} step={opts.step||"any"}
+            onChange={e=>opts.num?num(k,e.target.value):setDraft({...draft,[k]:e.target.value})}/>}
+    </div>);
+  return <div className="modalbg" onClick={onClose}>
+    <div className="modal fade" onClick={e=>e.stopPropagation()}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+        <h3 style={{fontFamily:FD,fontWeight:600,fontSize:20,margin:0}}>{draft.id?"Edit SKU":"Add SKU"}</h3>
+        <button className="btn line sm" onClick={onClose}><Ic n="x" s={14} c={C.sub}/></button>
+      </div>
+      <div className="grid g2" style={{marginTop:6}}>
+        {field("sku","SKU code")}
+        {field("brand","Brand")}
+      </div>
+      {field("name","Product name")}
+      <div className="grid g2">
+        {field("cat","Category",{select:CATS})}
+        {field("ch","Channel",{select:["FBA","FBM"]})}
+      </div>
+      <div className="grid g3">
+        {field("cost","Cost / unit",{num:true})}
+        {field("price","List price",{num:true})}
+        {field("map","MAP floor",{num:true})}
+      </div>
+      <div className="grid g3">
+        {field("units","Units on hand",{num:true})}
+        {field("sold30","Units sold 30d",{num:true})}
+        {field("leadTime","Lead time (days)",{num:true})}
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginTop:12}}>
+        <input id="sup" type="checkbox" checked={!!draft.suppressed} onChange={e=>setDraft({...draft,suppressed:e.target.checked,owner:e.target.checked?"Suppressed":"You"})}/>
+        <label htmlFor="sup" style={{fontFamily:FB,fontSize:13}}>Listing suppressed / stranded</label>
+      </div>
+      {belowCost&&<div style={{display:"flex",gap:8,alignItems:"flex-start",background:"#FBE9E9",border:"1px solid #F2D2D2",borderRadius:10,padding:"10px 12px",marginTop:14}}>
+        <Ic n="alert" s={16} c={C.alert}/><span style={{fontFamily:FB,fontSize:12.5,color:C.alert,lineHeight:1.45}}>
+          Price is below cost. You would lose {money2(Number(draft.cost)-Number(draft.price))} on every unit sold. Save anyway only if this is a deliberate clearance.</span></div>}
+      <div style={{display:"flex",gap:10,marginTop:18}}>
+        <button className="btn" style={{flex:1,justifyContent:"center"}} onClick={onSave}><Ic n="check" s={15} c={C.ink}/> Save SKU</button>
+        <button className="btn line" onClick={onClose}>Cancel</button>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ---- CSV import ---- */
+function parseCSV(text){
+  const rows=[];let i=0,f="",row=[],q=false;
+  while(i<text.length){const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
+    else { if(c==='"')q=true;
+      else if(c===','){row.push(f);f="";}
+      else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n')i++; row.push(f);f="";rows.push(row);row=[]; }
+      else f+=c; }
+    i++; }
+  if(f!==""||row.length){row.push(f);rows.push(row);}
+  return rows.filter(r=>!(r.length===1&&r[0].trim()===""));
+}
+const CSV_ALIAS={sku:["sku"],name:["name","product","title"],brand:["brand"],cat:["category","cat"],ch:["channel","ch"],
+ cost:["cost","cost price","unit cost","purchase price"],price:["price","list price","sale price"],
+ units:["units","on hand","onhand","stock","quantity","qty"],sold30:["sold30","sold","units sold","units sold 30d","velocity"],
+ leadTime:["leadtime","lead time","lead"],map:["map","map floor"],comp:["comp","competitor","lowest comp"],
+ owner:["owner","buy box"],suppressed:["suppressed","stranded"]};
+const CSV_NUM=["cost","price","units","sold30","leadTime","map","comp"];
+function csvToItems(text){
+  const rows=parseCSV(text); if(rows.length<2)return{items:[],skipped:0,error:"No data rows found below the header."};
+  const hdr=rows[0].map(h=>h.trim().toLowerCase());
+  const idx={};Object.keys(CSV_ALIAS).forEach(k=>{const j=hdr.findIndex(h=>CSV_ALIAS[k].includes(h));if(j>=0)idx[k]=j;});
+  if(idx.sku===undefined||idx.name===undefined)return{items:[],skipped:0,error:'CSV needs at least a "sku" and a "name" column.'};
+  const out=[];let skipped=0;
+  for(let r=1;r<rows.length;r++){const row=rows[r];
+    const get=k=>idx[k]!==undefined?(row[idx[k]]||"").trim():"";
+    const sku=get("sku"),name=get("name");
+    if(!sku||!name){skipped++;continue;}
+    const sup=/^(true|yes|y|1)$/i.test(get("suppressed"));
+    const it={sku,name,brand:get("brand")||"TFG Private",cat:get("cat")||"Fasteners",ch:(get("ch")||"FBA").toUpperCase(),suppressed:sup,owner:get("owner")||(sup?"Suppressed":"You")};
+    CSV_NUM.forEach(k=>{it[k]=Number(get(k))||0;});
+    if(!it.leadTime)it.leadTime=14;
+    if(!it.comp)it.comp=it.price;
+    out.push(it);
+  }
+  return{items:out,skipped,error:null};
+}
+function downloadTemplate(){
+  const headers="sku,name,brand,category,channel,cost,price,units,sold30,leadtime,map,comp,owner,suppressed";
+  const ex1="TFG-WSH-0038,Flat Washer 3/8 in Zinc 100 ct,TFG Private,Fasteners,FBA,8.50,13.99,300,120,14,11.99,13.50,You,false";
+  const ex2="MK-BLD-7250,Circular Saw Blade 7-1/4 in 24T,Makita,Power Tools,FBM,14.00,24.99,40,55,30,21.99,24.00,You,false";
+  try{const blob=new Blob([headers+"\n"+ex1+"\n"+ex2+"\n"],{type:"text/csv"});
+    const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download="calfast-catalogue-template.csv";
+    document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);}catch(e){window.alert("Download blocked here. It works on your hosted site.");}
+}
+function ImportModal({onImport,onClose}){
+  const[parsed,setParsed]=useState(null);const[skipped,setSkipped]=useState(0);
+  const[error,setError]=useState("");const[mode,setMode]=useState("upsert");
+  const onFile=e=>{const file=e.target.files&&e.target.files[0];if(!file)return;
+    setError("");setParsed(null);
+    const reader=new FileReader();
+    reader.onload=()=>{const res=csvToItems(String(reader.result));
+      if(res.error){setError(res.error);return;}
+      if(res.items.length===0){setError("No valid rows found. Each row needs a sku and a name.");return;}
+      setParsed(res.items);setSkipped(res.skipped);};
+    reader.onerror=()=>setError("Could not read that file.");
+    reader.readAsText(file);};
+  return <div className="modalbg" onClick={onClose}>
+    <div className="modal fade" onClick={e=>e.stopPropagation()}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+        <h3 style={{fontFamily:FD,fontWeight:600,fontSize:20,margin:0}}>Import catalogue from CSV</h3>
+        <button className="btn line sm" onClick={onClose}><Ic n="x" s={14} c={C.sub}/></button>
+      </div>
+      <p style={{fontFamily:FB,fontSize:13,color:C.sub,margin:"4px 0 14px",lineHeight:1.5}}>
+        Upload a CSV of your SKUs. Required columns: <b>sku</b> and <b>name</b>. Optional: brand, category, channel, cost, price, units, sold30, leadtime, map, comp, owner, suppressed. Missing fields use sensible defaults.</p>
+      <button className="btn line sm" onClick={downloadTemplate} style={{marginBottom:14}}><Ic n="dl" s={13} c={C.sub}/> Download template</button>
+      <label className="lbl">CSV file</label>
+      <input className="inp" type="file" accept=".csv,text/csv" onChange={onFile}/>
+      {error&&<div style={{display:"flex",gap:8,alignItems:"flex-start",background:"#FBE9E9",border:"1px solid #F2D2D2",borderRadius:10,padding:"10px 12px",marginTop:12}}>
+        <Ic n="alert" s={15} c={C.alert}/><span style={{fontFamily:FB,fontSize:12.5,color:C.alert,lineHeight:1.45}}>{error}</span></div>}
+      {parsed&&<div style={{marginTop:14}} className="fade">
+        <div style={{background:C.wash,borderRadius:10,padding:"12px 14px"}}>
+          <div style={{fontFamily:FM,fontSize:13}}>{parsed.length} SKUs ready{skipped?(" · "+skipped+" rows skipped"):""}</div>
+          <div style={{fontFamily:FB,fontSize:12,color:C.sub,marginTop:4,lineHeight:1.4}}>{parsed.slice(0,3).map(p=>p.name).join(", ")}{parsed.length>3?"\u2026":""}</div>
+        </div>
+        <label className="lbl" style={{marginTop:14}}>How to apply</label>
+        <div style={{display:"flex",gap:8}}>
+          {[["upsert","Add new, update matches"],["replace","Replace whole catalogue"]].map(o=>(
+            <button key={o[0]} onClick={()=>setMode(o[0])} className="pill" style={{cursor:"pointer",fontSize:12,padding:"9px 12px",flex:1,
+              border:"1px solid "+(mode===o[0]?C.limeDeep:C.line),background:mode===o[0]?"#EEF6DC":"#fff",color:mode===o[0]?C.limeDeep:C.sub}}>{o[1]}</button>))}
+        </div>
+        <button className="btn" style={{width:"100%",justifyContent:"center",marginTop:16}} onClick={()=>{onImport(parsed,mode);onClose();}}>
+          <Ic n="check" s={15} c={C.ink}/> Import {parsed.length} SKUs</button>
+      </div>}
+    </div>
+  </div>;
+}
+
+function Catalogue({items,setItems}){
+  const[q,setQ]=useState("");
+  const[filter,setFilter]=useState("all");
+  const[draft,setDraft]=useState(null);
+  const[imp,setImp]=useState(false);
+  const ms=useMemo(()=>items.map(metrics),[items]);
+  const rows=items.map((s,i)=>({s,m:ms[i]}))
+    .filter(r=>filter==="all"?true:r.m.status===filter)
+    .filter(r=>q?(r.s.name+r.s.sku+r.s.brand).toLowerCase().includes(q.toLowerCase()):true);
+  const reorderList=items.map((s,i)=>({s,m:ms[i]})).filter(r=>r.m.status==="reorder");
+
+  const save=()=>{
+    if(!draft.sku||!draft.name){return;}
+    if(draft.id){setItems(items.map(x=>x.id===draft.id?{...draft}:x));}
+    else{setItems([...items,{...draft,id:Date.now()}]);}
+    setDraft(null);
+  };
+  const del=id=>{ if(window.confirm("Delete this SKU?"))setItems(items.filter(x=>x.id!==id)); };
+  const importCsv=(parsed,mode)=>{
+    if(mode==="replace"){setItems(parsed.map((p,i)=>({...p,id:Date.now()+i})));return;}
+    const next=[...items];
+    parsed.forEach((p,k)=>{const j=next.findIndex(x=>String(x.sku).toLowerCase()===String(p.sku).toLowerCase());
+      if(j>=0)next[j]={...next[j],...p};else next.push({...p,id:Date.now()+k});});
+    setItems(next);
+  };
+
+  return <div>
+    <Head eyebrow="FBA + FBM · editable" title="Catalogue & Inventory"
+      sub="Create and edit SKUs, set cost and price, and let the engine flag below-cost listings and forecast what to reorder. Everything below recalculates as you type."
+      jd={["JD 2 · Listings & catalog","JD 4 · Inventory & fulfillment"]}/>
+
+    <div style={{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,border:"1px solid "+C.line,borderRadius:10,padding:"8px 12px",background:"#fff",flex:1,minWidth:200}}>
+        <Ic n="search" s={15} c={C.sub}/>
+        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search SKU, name, brand" style={{border:"none",outline:"none",width:"100%",fontSize:13}}/>
+      </div>
+      <button className="btn line" onClick={()=>setImp(true)}><Ic n="dl" s={15} c={C.sub}/> Import CSV</button>
+      <button className="btn" onClick={()=>setDraft({...BLANK})}><Ic n="plus" s={15} c={C.ink}/> Add SKU</button>
+    </div>
+
+    <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:12}}>
+      {["all","reorder","loss","stranded","overstock","dead","healthy"].map(f=>(
+        <button key={f} onClick={()=>setFilter(f)} className="pill" style={{cursor:"pointer",
+          border:"1px solid "+(filter===f?C.limeDeep:C.line),background:filter===f?"#EEF6DC":"#fff",color:filter===f?C.limeDeep:C.sub,fontSize:12,padding:"6px 12px"}}>
+          {f==="all"?"All SKUs":(SM[f]?SM[f].label:f)}</button>))}
+    </div>
+
+    <div className="card" style={{padding:0,overflow:"hidden"}}>
+      <div style={{overflowX:"auto"}}>
+        <table style={{minWidth:860}}>
+          <thead><tr style={{background:C.wash}}>
+            {["SKU / Product","Cost","Price","Margin","On hand","Cover","Status","Action",""].map(h=><th key={h}>{h}</th>)}
+          </tr></thead>
+          <tbody>{rows.map(({s,m})=>{const sm=SM[m.status];
+            return <tr key={s.id} style={{borderTop:"1px solid "+C.line}}>
+              <td><div style={{fontFamily:FB,fontWeight:600,fontSize:13}}>{s.name}</div>
+                <div style={{fontFamily:FM,fontSize:11,color:C.sub}}>{s.sku} · {s.brand} · {s.ch}</div></td>
+              <td style={{fontFamily:FM,fontSize:13,color:C.sub}}>{money2(s.cost)}</td>
+              <td style={{fontFamily:FM,fontSize:13,color:m.belowCost?C.alert:C.ink}}>{money2(s.price)}</td>
+              <td style={{fontFamily:FM,fontSize:13,color:m.marginAbs<0?C.alert:C.ink}}>{Math.round(m.marginPct*100)}%</td>
+              <td style={{fontFamily:FM,fontSize:13}}>{Number(s.units).toLocaleString()}</td>
+              <td style={{fontFamily:FM,fontSize:13,color:m.cover<m.lead?C.warn:C.ink}}>{m.cover===Infinity?"\u2014":Math.round(m.cover)+"d"}</td>
+              <td><span className="pill" style={{color:sm.color,background:sm.bg}}>{sm.label}</span></td>
+              <td style={{fontFamily:FM,fontSize:12,color:C.limeDeep}}>{m.status==="reorder"?("Order "+m.suggestQty):m.status==="loss"?"Fix price":m.status==="stranded"?"Reinstate":m.status==="overstock"?"Promote":"\u2014"}</td>
+              <td><div style={{display:"flex",gap:6}}>
+                <button className="btn line sm" onClick={()=>setDraft({...s})}><Ic n="edit" s={13} c={C.sub}/></button>
+                <button className="btn line sm" onClick={()=>del(s.id)}><Ic n="trash" s={13} c={C.alert}/></button>
+              </div></td>
+            </tr>;})}
+            {rows.length===0&&<tr><td colSpan="9" style={{textAlign:"center",color:C.sub,fontFamily:FB,fontSize:13,padding:24}}>No SKUs match. Add one or clear the filter.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* forecast / reorder */}
+    <div style={{marginTop:26}}>
+      <div className="eyebrow">Demand forecast</div>
+      <h3 style={{fontFamily:FD,fontWeight:600,fontSize:20,margin:"6px 0 6px"}}>Purchase orders the velocity is telling you to raise</h3>
+      <p className="sub" style={{marginBottom:14}}>Reorder point is daily velocity across lead time plus a one-week safety buffer. Suggested quantity refills to 45 days of cover after the next shipment lands.</p>
+      {reorderList.length===0
+        ? <div className="card" style={{display:"flex",alignItems:"center",gap:10}}><Ic n="check" s={18} c={C.limeDeep}/><span style={{fontFamily:FB,fontSize:14}}>Nothing to reorder. No SKU is under its reorder point.</span></div>
+        : <div className="grid g2">{reorderList.map(({s,m})=>(
+          <div key={s.id} className="card" style={{borderLeft:"3px solid "+C.warn}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+              <div><div style={{fontFamily:FB,fontWeight:600,fontSize:14}}>{s.name}</div>
+                <div style={{fontFamily:FM,fontSize:11,color:C.sub}}>{s.sku} · sells {m.vel.toFixed(1)}/day · {s.leadTime}d lead</div></div>
+              <span className="pill" style={{color:C.warn,background:"#FBF1E3"}}>Stocks out {Math.round(m.cover)}d</span>
+            </div>
+            <div className="grid g3" style={{marginTop:12,gap:8}}>
+              {[["30-day demand",m.f30],["60-day demand",m.f60],["90-day demand",m.f90]].map(x=>(
+                <div key={x[0]} style={{background:C.wash,borderRadius:9,padding:"8px 10px"}}>
+                  <div style={{fontFamily:FM,fontSize:10,color:C.sub,textTransform:"uppercase",letterSpacing:".06em"}}>{x[0]}</div>
+                  <div style={{fontFamily:FM,fontWeight:600,fontSize:16}}>{x[1].toLocaleString()}</div></div>))}
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:12,paddingTop:12,borderTop:"1px solid "+C.line}}>
+              <div><div style={{fontFamily:FM,fontSize:10,color:C.sub,textTransform:"uppercase",letterSpacing:".06em"}}>Suggested PO</div>
+                <div style={{fontFamily:FM,fontWeight:600,fontSize:22,color:C.limeDeep}}>{m.suggestQty.toLocaleString()} units</div>
+                <div style={{fontFamily:FM,fontSize:11,color:C.sub}}>\u2248 {money(m.suggestQty*s.cost)} at cost</div></div>
+              <button className="btn sm" onClick={()=>window.alert("Demo: a PO for "+m.suggestQty+" units of "+s.sku+" would be drafted here and routed to purchasing.")}><Ic n="bolt" s={14} c={C.ink}/> Draft PO</button>
+            </div>
+          </div>))}</div>}
+    </div>
+
+    {draft&&<Modal draft={draft} setDraft={setDraft} onSave={save} onClose={()=>setDraft(null)}/>}
+    {imp&&<ImportModal onImport={importCsv} onClose={()=>setImp(false)}/>}
+  </div>;
+}
+
+/* ---------------------------------------------------------- PRICING */
+function Pricing({items,go}){
+  const ms=items.map(metrics);
+  return <div>
+    <Head eyebrow="Margin + Buy Box + MAP" title="Pricing & Margin Board"
+      sub="Cost against list price, the margin it leaves, MAP breaches by other sellers, and the listings priced below cost. Edit prices in the catalogue and this updates."
+      jd={["JD 3 · Pricing & promotions","JD 9 · Brand protection"]}/>
+    <div className="card" style={{padding:0,overflow:"hidden"}}>
+      <div style={{overflowX:"auto"}}>
+        <table style={{minWidth:820}}>
+          <thead><tr style={{background:C.wash}}>
+            {["Product","Cost","Price","Margin","MAP","Lowest comp","Buy Box","Flag"].map(h=><th key={h}>{h}</th>)}
+          </tr></thead>
+          <tbody>{items.map((s,i)=>{const m=ms[i];
+            const losingBB=s.owner&&s.owner!=="You"&&s.owner!=="Suppressed";
+            const flag=s.suppressed?{t:"Suppressed",c:C.alert}:m.belowCost?{t:"Below cost",c:C.alert}:m.belowMap?{t:"MAP breach",c:C.alert}:losingBB?{t:"Lost Buy Box",c:C.warn}:{t:"OK",c:C.limeDeep};
+            return <tr key={s.id} style={{borderTop:"1px solid "+C.line}}>
+              <td><div style={{fontFamily:FB,fontWeight:600,fontSize:13}}>{s.name}</div><div style={{fontFamily:FM,fontSize:11,color:C.sub}}>{s.sku}</div></td>
+              <td style={{fontFamily:FM,fontSize:13,color:C.sub}}>{money2(s.cost)}</td>
+              <td style={{fontFamily:FM,fontSize:13,color:m.belowCost?C.alert:C.ink}}>{money2(s.price)}</td>
+              <td style={{fontFamily:FM,fontSize:13,color:m.marginAbs<0?C.alert:C.ink}}>{Math.round(m.marginPct*100)}%</td>
+              <td style={{fontFamily:FM,fontSize:13,color:C.sub}}>{s.map?money2(s.map):"\u2014"}</td>
+              <td style={{fontFamily:FM,fontSize:13,color:m.belowMap?C.alert:C.ink}}>{s.comp?money2(s.comp):"\u2014"}</td>
+              <td style={{fontFamily:FM,fontSize:12,color:losingBB?C.warn:C.ink}}>{s.owner||"You"}</td>
+              <td><span style={{display:"flex",alignItems:"center",gap:6,fontFamily:FM,fontSize:11.5,color:flag.c}}><Dot c={flag.c}/>{flag.t}</span></td>
+            </tr>;})}</tbody>
+        </table>
+      </div>
+    </div>
+    <div className="card" style={{marginTop:14,background:C.wash}}>
+      <div style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+        <Ic n="shield" s={17} c={C.warn}/><p style={{fontFamily:FB,fontSize:13,margin:0,lineHeight:1.5}}>
+          <b>The discipline.</b> A below-cost flag means a price edit slipped under the purchase price and is selling at a loss. A MAP breach means another seller undercut your floor. Both are revenue leaks you fix from this board, not at quarter end.</p>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ---------------------------------------------------------- ADVERTISING */
+function Ads(){
+  const camps=[["TFG Fasteners \u2014 Exact",2140,19800,"Scale",C.limeDeep,"Best efficiency. Raise budget and harvest converting terms."],
+   ["Power Tools \u2014 Brand Defense",1560,7100,"Monitor",C.warn,"Protect Buy Box on DeWALT and Milwaukee. Tighten to branded terms."],
+   ["Safety \u2014 Phrase",620,4400,"Healthy",C.limeDeep,"Steady. Expand once the glasses listing is reinstated."],
+   ["Abrasives \u2014 Broad",410,980,"Trim",C.warn,"Broad match leaking spend. Convert winners, negate the rest."],
+   ["Auto \u2014 Catch-all",980,1950,"Pause",C.alert,"50% ACOS. Pause, mine for keywords, rebuild as targeted."]];
+  const totalS=camps.reduce((a,c)=>a+c[1],0),totalSa=camps.reduce((a,c)=>a+c[2],0);
+  const maxA=Math.max(...camps.map(c=>c[1]/c[2]));
+  return <div>
+    <Head eyebrow="Sponsored Products" title="Advertising Efficiency"
+      sub="Where ad dollars convert and where they leak. Blended ACOS across the account is the headline. Illustrative campaign data." jd={["JD 5 · Advertising & growth"]}/>
+    <div className="grid g4" style={{marginBottom:16}}>
+      <Kpi label="Ad spend · 30d" value={totalS}/>
+      <Kpi label="Ad sales · 30d" value={totalSa}/>
+      <Kpi label="Blended ACOS" value={totalS/totalSa*100} suffix="%" dec={1} trend="target 18%" good/>
+      <Kpi label="Wasted spend" value={980} trend="Auto catch-all" good={false}/>
+    </div>
+    <div className="card">
+      <div style={{fontFamily:FB,fontWeight:600,fontSize:15,marginBottom:14}}>ACOS by campaign</div>
+      {camps.map(c=>{const acos=c[1]/c[2];const col=acos>0.3?C.alert:acos>0.18?C.warn:C.limeMid;
+        return <div key={c[0]} style={{marginBottom:14}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:5}}>
+            <span style={{fontFamily:FB,fontWeight:600,fontSize:13}}>{c[0]}</span>
+            <span style={{fontFamily:FM,fontSize:12,color:col}}>{Math.round(acos*100)}% · {c[3]}</span></div>
+          <div style={{background:C.wash,borderRadius:6,height:8,overflow:"hidden"}}>
+            <div style={{width:(acos/maxA*100)+"%",height:"100%",background:col,borderRadius:6}}/></div>
+          <div style={{fontFamily:FB,fontSize:12,color:C.sub,marginTop:5,lineHeight:1.4}}>{money(c[1])} spend · {money(c[2])} sales. {c[5]}</div>
+        </div>;})}
+    </div>
+  </div>;
+}
+
+/* ---------------------------------------------------------- AI (live-or-canned) */
+async function callClaude(prompt){
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
+    if(!res.ok)return null;
+    const data=await res.json();
+    const txt=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+    return parseJSON(txt);
+  }catch(e){return null;}
+}
+function parseJSON(text){
+  let c=text.replace(/```json/gi,"").replace(/```/g,"").trim();
+  const s=c.indexOf("{"),e=c.lastIndexOf("}");if(s!==-1&&e!==-1)c=c.slice(s,e+1);
+  try{return JSON.parse(c);}catch(_){return JSON.parse(c.replace(/[\n\r\t]+/g," "));}
+}
+function cannedListing(name,cat){
+  return {title:`${name} | Heavy-Duty ${cat} for Trade and Jobsite | CalFast / TFG`,
+    bullets:[
+      `BUILT FOR THE TRADE: ${name} engineered for daily professional use in construction, maintenance, and repair.`,
+      "CONSISTENT QUALITY: sourced and stocked by The Fastener Group, the same supply Calgary trades have trusted for years.",
+      "RIGHT FIRST TIME: accurate specs and clear sizing so you order once and avoid returns.",
+      "FAST CANADIAN FULFILLMENT: shipped from Canadian stock for quick delivery across Amazon.ca.",
+      "BULK-READY: case quantities suited to contractors and shops, not just one-off buyers."],
+    aplus:["Comparison module: this SKU against thinner or lower-spec alternatives, with a clear specs table.",
+      "Brand story module: The Fastener Group heritage and the trades it serves.",
+      "Application module: photos of the product in real jobsite use with sizing guidance."],
+    keywords:["structural "+cat.toLowerCase(),"contractor grade","jobsite supply","bulk pack","canadian stock","trade fasteners","heavy duty","commercial grade","tfg","calfast"],
+    compliance:["Confirm category-required safety attributes are complete to avoid listing suppression.",
+      "Enroll in Amazon Brand Registry for TFG private SKUs before running A+ Content.",
+      "Verify Canadian bilingual labeling requirements where they apply."]};
+}
+function cannedVoice(r){
+  const t=r.toLowerCase();
+  const neg=/(star|fog|late|missing|ripped|broke|loose|not |refund|return|disappoint|cheap)/.test(t);
+  const fulfil=/(late|ripped|bag|missing|arrived|shipping|delivery|package)/.test(t);
+  const listing=/(photo|listing|described|shows|included|picture|wrong item)/.test(t);
+  const cat=fulfil?"Fulfillment / packaging":listing?"Listing accuracy":neg?"Product quality":"Customer expectation";
+  return {sentiment:neg?"negative":"positive",stars:neg?2:5,
+    rootCause:{category:cat,explanation:fulfil?"The product was fine but it arrived late or damaged in transit, which is a packaging and carrier issue.":listing?"The listing implied something the box did not contain, so the gap is in listing accuracy, not the product.":neg?"The product underperformed against the claim on the listing.":"The customer is satisfied and the listing set the right expectation."},
+    response:neg?"Thanks for the detailed feedback. This is not the standard we hold our SKUs to. Please contact us through the order and we will make it right with a replacement or refund, and we are reviewing the listing and packaging so it does not happen again.":"Thanks for the review, we are glad it performed on the job. We appreciate you choosing CalFast and are here if you need anything for the next project.",
+    fix:fulfil?"Switch to a rigid mailer for this SKU and add a weight-check at pack-out to stop in-transit damage and shortages.":listing?"Correct the main image and bullet to match exactly what ships, and audit the rest of the listing for the same gap.":neg?"Pull a sample from current stock to verify the spec claim, and update the listing if the claim overstates performance.":"No action needed. Capture what worked here and reuse it across similar listings."};
+}
+
+function ListingAI(){
+  const presets=[["#10 x 3\" Structural Wood Screw, 500 ct","Fasteners"],["Nitrile-Coated Work Gloves, Large","Safety"],["DeWALT 20V MAX Impact Driver Kit","Power Tools"]];
+  const[name,setName]=useState(presets[0][0]);const[cat,setCat]=useState(presets[0][1]);
+  const[notes,setNotes]=useState("TFG private brand, exterior-rated, for decking and framing.");
+  const[loading,setLoading]=useState(false);const[out,setOut]=useState(null);const[live,setLive]=useState(true);
+  const run=async()=>{setLoading(true);setOut(null);
+    const prompt=`You are an Amazon Canada listing strategist for an industrial fasteners and tools distributor (CalFast / The Fastener Group). Optimize the listing. Return ONLY valid JSON, no markdown, keys: "title" (string under 200 chars), "bullets" (array of exactly 5 strings), "aplus" (array of 3 strings), "keywords" (array of 8 to 12 lowercase strings), "compliance" (array of 2 to 3 strings). Keep every value on one line. Product: ${name}. Category: ${cat}. Notes: ${notes}`;
+    const res=await callClaude(prompt);
+    if(res){setOut(res);setLive(true);}else{setOut(cannedListing(name,cat));setLive(false);}
+    setLoading(false);};
+  return <div>
+    <Head eyebrow="AI · powered by Claude" title="Listing Optimizer"
+      sub="Generate a search-optimized title, five bullets, an A+ plan, backend keywords, and compliance notes for any SKU." jd={["JD 2 · Listings & catalog"]}/>
+    <div className="grid g2">
+      <div className="card">
+        <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:14}}>
+          {presets.map(p=><button key={p[0]} className="pill" onClick={()=>{setName(p[0]);setCat(p[1]);setOut(null);}}
+            style={{cursor:"pointer",fontSize:11.5,padding:"6px 10px",border:"1px solid "+(name===p[0]?C.limeDeep:C.line),background:name===p[0]?"#EEF6DC":"#fff",color:name===p[0]?C.limeDeep:C.sub}}>{p[1]}</button>)}
+        </div>
+        <label className="lbl">Product</label><input className="inp" value={name} onChange={e=>setName(e.target.value)}/>
+        <label className="lbl">Category</label><input className="inp" value={cat} onChange={e=>setCat(e.target.value)}/>
+        <label className="lbl">Key attributes</label><textarea className="inp" rows="3" value={notes} onChange={e=>setNotes(e.target.value)} style={{resize:"vertical"}}/>
+        <button className="btn" style={{width:"100%",justifyContent:"center",marginTop:8}} disabled={loading} onClick={run}>
+          {loading?<><span className="spin" style={{display:"inline-flex"}}><Ic n="rotate" s={15} c={C.ink}/></span> Optimizing</>:<><Ic n="sparkles" s={15} c={C.ink}/> Generate listing</>}</button>
+      </div>
+      <div className="card">
+        {!out&&!loading&&<div style={empty}><Ic n="list" s={26} c={C.limeMid}/><p style={emptyT}>Generated listing appears here. Pick a preset or edit, then generate.</p></div>}
+        {loading&&<div style={empty}><span className="spin" style={{display:"inline-flex"}}><Ic n="rotate" s={26} c={C.limeMid}/></span><p style={emptyT}>Drafting an Amazon.ca optimized listing.</p></div>}
+        {out&&<div className="fade">
+          {!live&&<div style={note}>Example output. Configure an API key on your server for live generation.</div>}
+          <Fld k="Title"><span style={{fontFamily:FB,fontSize:13.5,lineHeight:1.5}}>{out.title}</span></Fld>
+          <Fld k="Bullet points"><ul style={{margin:0,paddingLeft:16}}>{(out.bullets||[]).map((b,i)=><li key={i} style={{fontFamily:FB,fontSize:12.5,marginBottom:6,lineHeight:1.45}}>{b}</li>)}</ul></Fld>
+          <Fld k="A+ Content plan">{(out.aplus||[]).map((a,i)=><div key={i} style={{fontFamily:FB,fontSize:12.5,marginBottom:5,lineHeight:1.45}}>{i+1}. {a}</div>)}</Fld>
+          <Fld k="Backend search terms"><div style={{display:"flex",flexWrap:"wrap",gap:6}}>{(out.keywords||[]).map((k,i)=><span key={i} className="pill" style={{fontSize:11,color:C.limeDeep,background:"#EEF6DC"}}>{k}</span>)}</div></Fld>
+          <Fld k="Compliance notes" last>{(out.compliance||[]).map((c,i)=><div key={i} style={{display:"flex",gap:6,marginBottom:5,alignItems:"flex-start"}}><Ic n="shield" s={13} c={C.warn}/><span style={{fontFamily:FB,fontSize:12,color:C.sub,lineHeight:1.4}}>{c}</span></div>)}</Fld>
+        </div>}
+      </div>
+    </div>
+  </div>;
+}
+
+function VoiceAI(){
+  const presets=["Two stars. Glasses fog up the second you start working in a cold shop. Box says anti-fog but they are not. Sending half of them back.",
+    "Screws are solid and the coating held up outside all winter. Only thing is the listing photo shows a Torx bit included and there was none in the box.",
+    "Showed up four days late and the bolts were loose in a ripped bag, about a dozen missing. Quality of the bolts themselves is fine."];
+  const[review,setReview]=useState(presets[0]);const[loading,setLoading]=useState(false);const[out,setOut]=useState(null);const[live,setLive]=useState(true);
+  const run=async()=>{setLoading(true);setOut(null);
+    const prompt=`You are an Amazon Canada account manager for an industrial fasteners and tools seller (CalFast / The Fastener Group). Analyze this review. Return ONLY valid JSON, no markdown, keys: "sentiment" ("positive"|"neutral"|"negative"), "stars" (integer 1 to 5), "rootCause" (object with "category" one of "Product quality","Listing accuracy","Fulfillment / packaging","Pricing","Customer expectation" and "explanation" one sentence), "response" (public reply under 80 words), "fix" (one sentence). Keep values on one line. Review: ${JSON.stringify(review)}`;
+    const res=await callClaude(prompt);
+    if(res){setOut(res);setLive(true);}else{setOut(cannedVoice(review));setLive(false);}
+    setLoading(false);};
+  const sent=out?(out.sentiment==="positive"?C.limeDeep:out.sentiment==="negative"?C.alert:C.warn):C.sub;
+  return <div>
+    <Head eyebrow="AI · powered by Claude" title="Voice of Customer"
+      sub="Paste a review. Get sentiment, the root cause, a drafted public reply, and the fix that stops it recurring." jd={["JD 8 · Customer experience"]}/>
+    <div className="grid g2">
+      <div className="card">
+        <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:12}}>
+          {presets.map((r,i)=><button key={i} className="pill" onClick={()=>{setReview(r);setOut(null);}}
+            style={{cursor:"pointer",fontSize:11.5,padding:"6px 10px",border:"1px solid "+(review===r?C.limeDeep:C.line),background:review===r?"#EEF6DC":"#fff",color:review===r?C.limeDeep:C.sub}}>Example {i+1}</button>)}
+        </div>
+        <label className="lbl">Customer review</label>
+        <textarea className="inp" rows="6" value={review} onChange={e=>setReview(e.target.value)} style={{resize:"vertical"}}/>
+        <button className="btn" style={{width:"100%",justifyContent:"center",marginTop:8}} disabled={loading} onClick={run}>
+          {loading?<><span className="spin" style={{display:"inline-flex"}}><Ic n="rotate" s={15} c={C.ink}/></span> Analyzing</>:<><Ic n="msg" s={15} c={C.ink}/> Analyze review</>}</button>
+      </div>
+      <div className="card">
+        {!out&&!loading&&<div style={empty}><Ic n="msg" s={26} c={C.limeMid}/><p style={emptyT}>Analysis appears here: sentiment, root cause, a drafted reply, and the fix.</p></div>}
+        {loading&&<div style={empty}><span className="spin" style={{display:"inline-flex"}}><Ic n="rotate" s={26} c={C.limeMid}/></span><p style={emptyT}>Reading the review and tracing root cause.</p></div>}
+        {out&&<div className="fade">
+          {!live&&<div style={note}>Example output. Configure an API key on your server for live analysis.</div>}
+          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+            <span className="pill" style={{fontSize:12,color:sent,background:out.sentiment==="positive"?"#EEF6DC":out.sentiment==="negative"?"#FBE9E9":"#FBF1E3",textTransform:"capitalize"}}>{out.sentiment}</span>
+            <span style={{fontFamily:FM,fontSize:13}}>{(()=>{const st=Math.max(0,Math.min(5,Math.round(Number(out.stars))||0));return "\u2605".repeat(st)+"\u2606".repeat(5-st);})()}</span>
+          </div>
+          <Fld k="Root cause"><div style={{fontFamily:FB,fontWeight:600,fontSize:13}}>{out.rootCause&&out.rootCause.category}</div>
+            <div style={{fontFamily:FB,fontSize:12.5,color:C.sub,marginTop:3,lineHeight:1.45}}>{out.rootCause&&out.rootCause.explanation}</div></Fld>
+          <Fld k="Suggested public reply"><div style={{fontFamily:FB,fontSize:12.5,lineHeight:1.5,background:C.wash,borderRadius:8,padding:"10px 12px"}}>{out.response}</div></Fld>
+          <Fld k="Fix that prevents recurrence" last><div style={{display:"flex",gap:6,alignItems:"flex-start"}}><Ic n="check" s={14} c={C.limeDeep}/><span style={{fontFamily:FB,fontSize:12.5,lineHeight:1.45}}>{out.fix}</span></div></Fld>
+        </div>}
+      </div>
+    </div>
+  </div>;
+}
+const empty={display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:10,textAlign:"center",minHeight:230,padding:20};
+const emptyT={fontFamily:FB,fontSize:13,color:C.sub,margin:0,maxWidth:280,lineHeight:1.5};
+const note={fontFamily:FM,fontSize:11,color:C.warn,background:"#FBF1E3",border:"1px solid #F0DCC0",borderRadius:8,padding:"6px 10px",marginBottom:12};
+function Fld({k,children,last}){return <div style={{paddingBottom:12,marginBottom:12,borderBottom:last?"none":"1px solid "+C.line}}>
+  <div style={{fontFamily:FM,fontSize:10.5,letterSpacing:".1em",textTransform:"uppercase",color:C.sub,marginBottom:7}}>{k}</div>{children}</div>;}
+
+/* ---------------------------------------------------------- PLAN */
+function Plan(){
+  const ph=[["Days 1\u201330","Stabilize and recover",["Reinstate stranded listings and recover lost Buy Box revenue.","Stand up this portal against live SP-API data.","Fix below-cost prices and enforce MAP breaches through Brand Registry."]],
+   ["Days 31\u201360","Tighten and optimize",["Rewrite weak listings with the optimizer and add A+ Content.","Rebuild PPC around converting terms, drive blended ACOS toward 18%.","Launch a liquidation plan for aged and overstock SKUs."]],
+   ["Days 61\u201390","Grow the catalogue",["Launch the next wave of TFG private SKUs suited to the marketplace.","Run forecast-driven purchasing so stockouts and overstock both fall.","Report weekly to leadership on sales, margin, ACOS, and inventory health."]]];
+  return <div>
+    <Head eyebrow="The first quarter" title="30 / 60 / 90 Plan" sub="What I would do, in order, tied to the triggers this portal surfaces." jd={["JD 10 · Cross-functional","JD 6 · Partnerships"]}/>
+    <div className="grid g3">{ph.map(p=><div key={p[0]} className="card" style={{borderTop:"3px solid "+C.limeMid}}>
+      <div style={{fontFamily:FM,fontSize:11,letterSpacing:".1em",color:C.limeDeep,textTransform:"uppercase"}}>{p[0]}</div>
+      <div style={{fontFamily:FD,fontWeight:600,fontSize:19,margin:"6px 0 14px"}}>{p[1]}</div>
+      {p[2].map((it,j)=><div key={j} style={{display:"flex",gap:8,marginBottom:11,alignItems:"flex-start"}}><Ic n="check" s={15} c={C.limeMid}/><span style={{fontFamily:FB,fontSize:13,lineHeight:1.45}}>{it}</span></div>)}
+    </div>)}</div>
+    <div style={{background:C.panel,borderRadius:18,padding:"32px 30px",marginTop:26,position:"relative",overflow:"hidden"}}>
+      <div style={{position:"absolute",inset:0,background:"radial-gradient(700px 240px at 90% 0%, rgba(219,244,167,0.14), transparent)"}}/>
+      <div style={{position:"relative"}}>
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}>
+          <SDMark s={42} dark/>
+          <div><div style={{fontFamily:FD,fontWeight:700,fontSize:16,color:"#fff",lineHeight:1}}>Sibangjit Das</div>
+          <div style={{fontFamily:FM,fontSize:11,color:C.panelSub,marginTop:3,letterSpacing:".04em"}}>SUPPLY CHAIN · OPERATIONS · E-COMMERCE</div></div>
+        </div>
+        <h3 style={{fontFamily:FD,fontWeight:700,fontSize:24,color:"#fff",margin:0}}>Let's run your channel.</h3>
+        <p style={{fontFamily:FB,fontSize:14.5,color:"#D7DAC9",margin:"12px 0 0",maxWidth:560,lineHeight:1.55}}>
+          Sibangjit Das. Supply chain and operations leader, Vernon BC. I build the tools, not just the talking points. Happy to walk through this live and connect it to your real Seller Central.</p>
+        <div style={{display:"flex",flexWrap:"wrap",gap:12,marginTop:20}}>
+          <a className="btn" href="https://sibangjitdas.com" target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>sibangjitdas.com <Ic n="ext" s={14} c={C.ink}/></a>
+          <a className="btn ghost" href="https://www.linkedin.com/in/sibangjit-das-352b2822" target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>LinkedIn <Ic n="ext" s={14} c="#E7EAD9"/></a>
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ---------------------------------------------------------- APP */
+const NAV=[["pitch","The Pitch","sparkles"],["command","Command Center","gauge"],["catalogue","Catalogue",  "box"],
+  ["pricing","Pricing & Margin","tag"],["ads","Advertising","mega"],["listing","Listing Optimizer","list",true],
+  ["voice","Voice of Customer","msg",true],["plan","30 / 60 / 90","cal"]];
+
+function App(){
+  const[view,setView]=useState("pitch");
+  const[items,setItems]=useState(()=>store.read("cft_catalogue",SEED));
+  const mainRef=useRef(null);
+  useEffect(()=>{store.write("cft_catalogue",items);},[items]);
+  const go=v=>{setView(v);if(mainRef.current)mainRef.current.scrollTop=0;};
+  const reset=()=>{if(window.confirm("Reset the catalogue to the demo data?")){setItems(SEED);store.write("cft_catalogue",SEED);}};
+  const body={pitch:<Pitch go={go}/>,command:<Command items={items} go={go}/>,catalogue:<Catalogue items={items} setItems={setItems}/>,
+    pricing:<Pricing items={items} go={go}/>,ads:<Ads/>,listing:<ListingAI/>,voice:<VoiceAI/>,plan:<Plan/>}[view];
+  return <div className="shell">
+    <aside className="side">
+      <div style={{display:"flex",alignItems:"center",gap:10,padding:"20px 20px 16px"}}>
+        <Logo s={26}/><div><div style={{fontFamily:FD,fontWeight:700,fontSize:15,lineHeight:1.05}}>Command Center</div>
+        <div style={{fontFamily:FM,fontSize:9.5,color:C.sub,letterSpacing:".06em"}}>CALFAST · AMAZON.CA</div></div></div>
+      <nav style={{padding:"0 12px",flex:1}}>{NAV.map(n=>(
+        <button key={n[0]} className={"navbtn"+(view===n[0]?" active":"")} onClick={()=>go(n[0])}>
+          <Ic n={n[2]} s={16} c={view===n[0]?C.limeDeep:C.sub}/>{n[1]}
+          {n[3]&&<span style={{marginLeft:"auto",fontFamily:FM,fontSize:8.5,color:C.limeDeep,background:C.lime,borderRadius:4,padding:"1px 4px"}}>AI</span>}
+        </button>))}</nav>
+      <div style={{padding:16,borderTop:"1px solid "+C.line}}>
+        <button className="btn line sm" style={{width:"100%",justifyContent:"center",marginBottom:12}} onClick={reset}><Ic n="rotate" s={13} c={C.sub}/> Reset demo data</button>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <SDMark s={34}/>
+          <div><div style={{fontFamily:FB,fontWeight:600,fontSize:12.5}}>Sibangjit Das</div>
+          <div style={{fontFamily:FM,fontSize:10.5,color:C.sub,marginTop:2}}>Manager, E-Comm / Web</div></div>
+        </div></div>
+    </aside>
+    <main className="main" ref={mainRef}>
+      <div style={{background:C.paper,borderBottom:"1px solid "+C.line,padding:"12px 18px",position:"sticky",top:0,zIndex:10}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div style={{fontFamily:FM,fontSize:11.5,color:C.sub,letterSpacing:".04em"}}>A pitch from Sibangjit Das · CalFast on Amazon.ca · illustrative data</div>
+          <a href="https://sibangjitdas.com" target="_blank" rel="noopener noreferrer" style={{fontFamily:FM,fontSize:11.5,color:C.limeDeep,textDecoration:"none",display:"flex",alignItems:"center",gap:4}}>sibangjitdas.com <Ic n="ext" s={12} c={C.limeDeep}/></a>
+        </div>
+        <div className="tabs" style={{gap:8,overflowX:"auto",marginTop:10,paddingBottom:2}}>
+          {NAV.map(n=><button key={n[0]} className="pill" onClick={()=>go(n[0])}
+            style={{whiteSpace:"nowrap",cursor:"pointer",fontSize:12,padding:"6px 11px",border:"1px solid "+(view===n[0]?C.limeDeep:C.line),background:view===n[0]?"#EEF6DC":"#fff",color:view===n[0]?C.limeDeep:C.sub}}>{n[1]}{n[3]?" ·AI":""}</button>)}
+        </div>
+      </div>
+      <div className="fade" key={view} style={{padding:"26px 18px 56px",maxWidth:940,margin:"0 auto"}}>{body}</div>
+    </main>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
